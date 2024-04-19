@@ -1,5 +1,6 @@
 mod keycodes;
 mod reports;
+mod actuator;
 
 fn main() {
     // It is necessary to call this function once. Otherwise, some patches to the runtime
