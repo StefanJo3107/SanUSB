@@ -1,4 +1,4 @@
-use super::usb_util_keyboard_report;
+// use super::usb_util_keyboard_report;
 
 pub struct KeyboardReport<const N: usize> {
     modifier: u8,
@@ -74,9 +74,9 @@ impl<const N: usize> KeyboardReport<N> {
     }
 
     fn send(&self) {
-        unsafe {
-            usb_util_keyboard_report(self.modifier, self.keycode.as_ptr());
-        }
+        // unsafe {
+        //     usb_util_keyboard_report(self.modifier, self.keycode.as_ptr());
+        // }
     }
 
     fn get_modifier(&self, key: u8) -> Option<u8> {

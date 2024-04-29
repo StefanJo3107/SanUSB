@@ -1,4 +1,4 @@
-use super::usb_util_consumer_report;
+// use super::usb_util_consumer_report;
 
 pub struct ConsumerControlReport {
     pub code: u16,
@@ -25,8 +25,8 @@ impl ConsumerControlReport {
     }
 
     fn send(&self) {
-        unsafe {
-            usb_util_consumer_report(self.code);
-        }
+        // unsafe {
+        //     usb_util_consumer_report(self.code);
+        // }
     }
 }

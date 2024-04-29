@@ -1,2 +1,2 @@
-mod actuator;
-mod usb_actuator;
+pub(crate) mod actuator;
+pub(crate) mod usb_actuator;

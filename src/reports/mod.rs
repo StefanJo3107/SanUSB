@@ -2,12 +2,12 @@ mod keyboard;
 mod abs_mouse;
 mod consumer_control;
 
-extern "C" {
-    fn usb_util_init();
-    fn usb_util_keyboard_report(modifier: u8, keycode: *const u8);
-    fn usb_util_abs_mouse_report(buttons: u8, x: u16, y: u16, wheel: i8, pan: i8);
-    fn usb_util_consumer_report(code: u16);
-}
+// extern "C" {
+//     fn usb_util_init();
+//     fn usb_util_keyboard_report(modifier: u8, keycode: *const u8);
+//     fn usb_util_abs_mouse_report(buttons: u8, x: u16, y: u16, wheel: i8, pan: i8);
+//     fn usb_util_consumer_report(code: u16);
+// }
 
 use log::warn;
 use crate::keycodes::KeyCode;
@@ -41,11 +41,7 @@ impl HidReport {
     }
 
     pub fn init(&mut self) {
-        if crate::INIT_USB {
-            unsafe { usb_util_init() }
-        } else {
-            warn!("Skipping USB init")
-        }
+        // unsafe { usb_util_init() }
     }
 
     pub fn get_mouse_position(&self) -> (u16, u16) {

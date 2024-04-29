@@ -1,4 +1,4 @@
-use super::usb_util_abs_mouse_report;
+// use super::usb_util_abs_mouse_report;
 
 pub struct AbsMouseReport {
     button: u8,
@@ -56,13 +56,13 @@ impl AbsMouseReport {
     fn send<S: Into<Option<i8>>, P: Into<Option<i8>>>(&self, scroll: S, pan: P) {
         // Scale the position to the screen size
         unsafe {
-            usb_util_abs_mouse_report(
-                self.button,
-                self.x,
-                self.y,
-                scroll.into().unwrap_or_default(),
-                pan.into().unwrap_or_default(),
-            );
+            // usb_util_abs_mouse_report(
+            //     self.button,
+            //     self.x,
+            //     self.y,
+            //     scroll.into().unwrap_or_default(),
+            //     pan.into().unwrap_or_default(),
+            // );
         }
     }
 }
