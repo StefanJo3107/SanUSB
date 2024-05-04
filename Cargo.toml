@@ -37,9 +37,6 @@ san_vm = {path = "./SanVM"}
 embuild = "0.31.3"
 
 [[package.metadata.esp-idf-sys.extra_components]]
-remote_component = { name = "espressif/mdns", version = "1.2" }
-
-[[package.metadata.esp-idf-sys.extra_components]]
 remote_component = { name = "espressif/tinyusb", version = "^0.15.0~8" }
 bindings_header = "tusb_bindings.h"
 bindings_module = "tinyusb"

@@ -1,10 +1,9 @@
-use crate::actuator::usb_actuator::UsbHidActuator;
-use crate::actuator::actuator::Actuator;
-use esp_idf_sys::
 use san_vm::runner;
+use sanscript_common::hid_actuator::HidActuator;
+use crate::esp_actuator::EspActuator;
+
 mod keycodes;
-mod reports;
-mod actuator;
+mod esp_actuator;
 
 fn main() {
     // It is necessary to call this function once. Otherwise, some patches to the runtime
@@ -13,6 +12,9 @@ fn main() {
 
     // Bind the log crate to the ESP Logging facilities
     esp_idf_svc::log::EspLogger::initialize_default();
-    let bytecode = include_bytes!("/home/stefan/Dev/SanScript/Payloads/test1.sanb");
-    runner::deserialize_bytecode(bytecode);
+    let bytecode = include_bytes!("/home/stefan/Dev/SanScript/Payloads/test2.sanb");
+    let mut actuator = EspActuator{};
+    actuator.init_actuator();
+    actuator.sleep(3000);
+    runner::deserialize_bytecode(EspActuator{}, bytecode);
 }
