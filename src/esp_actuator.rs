@@ -6,13 +6,13 @@ use esp_idf_sys::esptinyusb::{tinyusb_config_t, tinyusb_config_t__bindgen_ty_1, 
 use esp_idf_sys::tinyusb::{hid_report_type_t, tud_mounted};
 use sanscript_common::keycodes::{HID_KEY_SHIFT_LEFT, HID_KEY_SHIFT_RIGHT};
 
-const config_desc: [u8; 34] = [9, 2, 34, 0, 1, 1, 0, 160, 50, 9, 4, 0, 0, 1, 3, 0, 0, 4, 9, 33, 17, 1, 0, 1, 34, 146, 0, 7, 5, 129, 3, 16, 0, 10];
-const report_desc: [u8; 146] = [5, 1, 9, 6, 161, 1, 133, 1, 5, 7, 25, 224, 41, 231, 21, 0, 37, 1, 149, 8, 117, 1, 129, 2, 149, 1, 117, 8, 129, 1, 5, 8, 25, 1, 41, 5, 149, 5, 117, 1, 145, 2, 149, 1, 117, 3, 145, 1, 5, 7, 25, 0, 42, 255, 0, 21, 0, 38, 255, 0, 149, 6, 117, 8, 129, 0, 192, 5, 1, 9, 2, 161, 1, 133, 2, 9, 1, 161, 0, 5, 9, 25, 1, 41, 5, 21, 0, 37, 1, 149, 5, 117, 1, 129, 2, 149, 1, 117, 3, 129, 1, 5, 1, 9, 48, 9, 49, 21, 129, 37, 127, 149, 2, 117, 8, 129, 6, 9, 56, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 5, 12, 10, 56, 2, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 192, 192];
+const CONFIG_DESC: [u8; 34] = [9, 2, 34, 0, 1, 1, 0, 160, 50, 9, 4, 0, 0, 1, 3, 0, 0, 4, 9, 33, 17, 1, 0, 1, 34, 146, 0, 7, 5, 129, 3, 16, 0, 10];
+const REPORT_DESC: [u8; 146] = [5, 1, 9, 6, 161, 1, 133, 1, 5, 7, 25, 224, 41, 231, 21, 0, 37, 1, 149, 8, 117, 1, 129, 2, 149, 1, 117, 8, 129, 1, 5, 8, 25, 1, 41, 5, 149, 5, 117, 1, 145, 2, 149, 1, 117, 3, 145, 1, 5, 7, 25, 0, 42, 255, 0, 21, 0, 38, 255, 0, 149, 6, 117, 8, 129, 0, 192, 5, 1, 9, 2, 161, 1, 133, 2, 9, 1, 161, 0, 5, 9, 25, 1, 41, 5, 21, 0, 37, 1, 149, 5, 117, 1, 129, 2, 149, 1, 117, 3, 129, 1, 5, 1, 9, 48, 9, 49, 21, 129, 37, 127, 149, 2, 117, 8, 129, 6, 9, 56, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 5, 12, 10, 56, 2, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 192, 192];
 
 
 #[no_mangle]
 extern "C" fn tud_hid_descriptor_report_cb(instance: u8) -> *const u8 {
-    return report_desc.as_ptr();
+    return REPORT_DESC.as_ptr();
 }
 
 #[no_mangle]
@@ -48,8 +48,12 @@ fn get_hid_string_descriptor() -> (*mut *const c_char, usize) {
 pub struct EspActuator {}
 
 impl EspActuator {
+    pub fn new() -> EspActuator {
+        EspActuator {}
+    }
+
     pub fn init_actuator(&self) {
-        let (string_hid_desc, string_hid_desc_len) = get_hid_string_descriptor();
+        // let (string_hid_desc, string_hid_desc_len) = get_hid_string_descriptor();
 
         log::info!("USB initialization!");
         let tusb_cfg = tinyusb_config_t {
@@ -57,11 +61,11 @@ impl EspActuator {
             string_descriptor_count: 0,
             external_phy: false,
             __bindgen_anon_1: unsafe { tinyusb_config_t__bindgen_ty_1 { device_descriptor: ptr::null_mut() } },
-            __bindgen_anon_2: unsafe { tinyusb_config_t__bindgen_ty_2 { __bindgen_anon_1: tinyusb_config_t__bindgen_ty_2__bindgen_ty_1 { configuration_descriptor: config_desc.as_ptr() } } },
+            __bindgen_anon_2: unsafe { tinyusb_config_t__bindgen_ty_2 { __bindgen_anon_1: tinyusb_config_t__bindgen_ty_2__bindgen_ty_1 { configuration_descriptor: CONFIG_DESC.as_ptr() } } },
             self_powered: false,
             vbus_monitor_io: 0,
         };
-        //
+
         unsafe { tinyusb_driver_install(&tusb_cfg); }
     }
 }
@@ -97,7 +101,7 @@ impl HidActuator for EspActuator {
 
         unsafe {
             if tud_mounted() {
-                if keys_slice.contains(&HID_KEY_SHIFT_LEFT){
+                if keys_slice.contains(&HID_KEY_SHIFT_LEFT) {
                     tud_hid_n_keyboard_report(0, 1, 0, [HID_KEY_SHIFT_LEFT, 0, 0, 0, 0, 0].as_mut_ptr());
                     self.sleep(10);
                 } else if keys_slice.contains(&HID_KEY_SHIFT_RIGHT) {

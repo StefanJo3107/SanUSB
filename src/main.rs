@@ -2,7 +2,6 @@ use san_vm::runner;
 use sanscript_common::hid_actuator::HidActuator;
 use crate::esp_actuator::EspActuator;
 
-mod keycodes;
 mod esp_actuator;
 
 fn main() {
@@ -12,9 +11,9 @@ fn main() {
 
     // Bind the log crate to the ESP Logging facilities
     esp_idf_svc::log::EspLogger::initialize_default();
-    let bytecode = include_bytes!("/home/stefan/Dev/SanScript/Payloads/test2.sanb");
-    let mut actuator = EspActuator{};
+    let bytecode = include_bytes!("/home/stefan/Dev/SanScript/Payloads/test3.sanb");
+    let mut actuator = EspActuator::new();
     actuator.init_actuator();
     actuator.sleep(3000);
-    runner::deserialize_bytecode(EspActuator{}, bytecode);
+    runner::deserialize_bytecode(actuator, bytecode);
 }
