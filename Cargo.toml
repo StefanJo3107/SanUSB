@@ -32,6 +32,7 @@ embedded-svc = { version = "0.27.1", features = [] }
 embedded-hal = "1.0.0"
 sanscript_common = {path = "SanCommon" }
 san_vm = {path = "./SanVM"}
+anyhow = "1.0.83"
 
 [build-dependencies]
 embuild = "0.31.3"

@@ -1,8 +1,8 @@
 use san_vm::runner;
 use sanscript_common::hid_actuator::HidActuator;
-use crate::esp_actuator::EspActuator;
+use crate::actuator::esp_actuator::EspActuator;
 
-mod esp_actuator;
+mod actuator;
 
 fn main() {
     // It is necessary to call this function once. Otherwise, some patches to the runtime
