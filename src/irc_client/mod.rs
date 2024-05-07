@@ -1,3 +1,3 @@
 mod tcp_client;
-mod wifi_handler;
-mod irc_client;
+pub mod wifi_handler;
+pub mod irc_client;

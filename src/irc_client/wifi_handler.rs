@@ -32,10 +32,10 @@ impl WiFiHandler {
     pub fn connect_wifi(&mut self) -> anyhow::Result<()> {
         let configuration = Configuration::Client(
             ClientConfiguration {
-                ssid: self.ssid.clone().try_into().unwrap(),
+                ssid: self.ssid.clone().as_str().try_into().unwrap(),
                 bssid: None,
                 auth_method: AuthMethod::WPA2Personal,
-                password: self.password.clone().try_into().unwrap(),
+                password: self.password.clone().as_str().try_into().unwrap(),
                 channel: None,
                 ..Default::default()
             }

@@ -54,7 +54,8 @@ impl IRClient {
     }
 
     pub fn init_timer(&mut self) -> anyhow::Result<()> {
-        self.tcp_client.send_command("Initializing device...")?;
+        self.send_message("Initializing device...")?;
+        self.tcp_client.receive_motd()?;
         FreeRtos::delay_ms(1000);
         Ok(())
     }
@@ -70,7 +71,7 @@ impl IRClient {
     }
 
     pub fn send_quit(&mut self) -> anyhow::Result<()> {
-        self.tcp_client.send_command("QUIT\r\n")
+        self.tcp_client.send_command(String::from("QUIT\r\n"))
     }
 
     pub fn handle_messages(&mut self) -> anyhow::Result<()> {
