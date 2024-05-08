@@ -27,6 +27,6 @@ fn main() {
     // runner::deserialize_bytecode(actuator, bytecode);
     let mut wifi = WiFiHandler::new(String::from(SSID), String::from(PASS)).expect("Error creating wifi handler");
     wifi.connect_wifi().expect("Error while connecting to wifi");
-    let mut irc = IRClient::new(String::from(SERVER_ADDR), SERVER_PORT, String::from(SERVER_NAME), String::from(CHANNEL_NAME), String::from(USERNAME));
+    let mut irc = IRClient::new(String::from(SERVER_ADDR), SERVER_PORT, String::from(SERVER_NAME), String::from(CHANNEL_NAME), String::from(USERNAME)).expect("Error creating irc client");
     irc.client_loop();
 }
