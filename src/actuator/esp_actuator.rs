@@ -1,10 +1,10 @@
 use std::ffi::{c_char, CString};
 use std::ptr;
 use esp_idf_hal::delay::FreeRtos;
-use sanscript_common::hid_actuator::HidActuator;
+use san_common::hid_actuator::HidActuator;
 use esp_idf_sys::esptinyusb::{tinyusb_config_t, tinyusb_config_t__bindgen_ty_1, tinyusb_config_t__bindgen_ty_2, tinyusb_config_t__bindgen_ty_2__bindgen_ty_1, tinyusb_driver_install, tud_hid_n_keyboard_report};
 use esp_idf_sys::tinyusb::{hid_report_type_t, tud_mounted};
-use sanscript_common::keycodes::{HID_KEY_SHIFT_LEFT, HID_KEY_SHIFT_RIGHT};
+use san_common::keycodes::{HID_KEY_SHIFT_LEFT, HID_KEY_SHIFT_RIGHT};
 
 const CONFIG_DESC: [u8; 34] = [9, 2, 34, 0, 1, 1, 0, 160, 50, 9, 4, 0, 0, 1, 3, 0, 0, 4, 9, 33, 17, 1, 0, 1, 34, 146, 0, 7, 5, 129, 3, 16, 0, 10];
 const REPORT_DESC: [u8; 146] = [5, 1, 9, 6, 161, 1, 133, 1, 5, 7, 25, 224, 41, 231, 21, 0, 37, 1, 149, 8, 117, 1, 129, 2, 149, 1, 117, 8, 129, 1, 5, 8, 25, 1, 41, 5, 149, 5, 117, 1, 145, 2, 149, 1, 117, 3, 145, 1, 5, 7, 25, 0, 42, 255, 0, 21, 0, 38, 255, 0, 149, 6, 117, 8, 129, 0, 192, 5, 1, 9, 2, 161, 1, 133, 2, 9, 1, 161, 0, 5, 9, 25, 1, 41, 5, 21, 0, 37, 1, 149, 5, 117, 1, 129, 2, 149, 1, 117, 3, 129, 1, 5, 1, 9, 48, 9, 49, 21, 129, 37, 127, 149, 2, 117, 8, 129, 6, 9, 56, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 5, 12, 10, 56, 2, 21, 129, 37, 127, 149, 1, 117, 8, 129, 6, 192, 192];

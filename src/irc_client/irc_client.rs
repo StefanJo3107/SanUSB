@@ -2,7 +2,7 @@ use anyhow::bail;
 use esp_idf_hal::delay::FreeRtos;
 use log::{info, warn};
 use san_vm::runner;
-use sanscript_common::hid_actuator::HidActuator;
+use san_common::hid_actuator::HidActuator;
 use crate::actuator::esp_actuator::EspActuator;
 use crate::irc_client::http_client::PayloadHttpClient;
 use crate::irc_client::tcp_client::TcpClient;
