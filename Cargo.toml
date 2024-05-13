@@ -31,6 +31,7 @@ esp-idf-hal = "0.43.1"
 embedded-svc = { version = "0.27.1", features = [] }
 embedded-hal = "1.0.0"
 anyhow = "1.0.83"
+clap = { version = "4.5.4", features = ["derive"] }
 san_common = {path= "../san-common" }
 san_vm = {path = "../san-vm"}
 
