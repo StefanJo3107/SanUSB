@@ -33,7 +33,7 @@ pub fn run(mode: SanMode) {
 }
 
 fn run_auto() {
-    let bytecode = include_bytes!("../../Payloads/windows_rickroll.sanb");
+    let bytecode = include_bytes!("../../Payloads/paint.sanb");
     let mut actuator = EspActuator::new();
     actuator.init_actuator();
     actuator.sleep(3000);

@@ -2,7 +2,7 @@ use std::ffi::{c_char, CString};
 use std::ptr;
 use esp_idf_hal::delay::FreeRtos;
 use san_common::hid_actuator::HidActuator;
-use esp_idf_sys::esptinyusb::{tinyusb_config_t, tinyusb_config_t__bindgen_ty_1, tinyusb_config_t__bindgen_ty_2, tinyusb_config_t__bindgen_ty_2__bindgen_ty_1, tinyusb_driver_install, tud_hid_n_keyboard_report};
+use esp_idf_sys::esptinyusb::{tinyusb_config_t, tinyusb_config_t__bindgen_ty_1, tinyusb_config_t__bindgen_ty_2, tinyusb_config_t__bindgen_ty_2__bindgen_ty_1, tinyusb_driver_install, tud_hid_n_keyboard_report, tud_hid_n_mouse_report};
 use esp_idf_sys::tinyusb::{hid_report_type_t, tud_mounted};
 use san_common::keycodes::{HID_KEY_SHIFT_LEFT, HID_KEY_SHIFT_RIGHT};
 
@@ -45,11 +45,15 @@ fn get_hid_string_descriptor() -> (*mut *const c_char, usize) {
     (raw_ptr, raw_pointers.len())
 }
 
-pub struct EspActuator {}
+pub struct EspActuator {
+    mouse_button_pressed: u8
+}
 
 impl EspActuator {
     pub fn new() -> EspActuator {
-        EspActuator {}
+        EspActuator {
+            mouse_button_pressed: 0
+        }
     }
 
     pub fn init_actuator(&self) {
@@ -71,24 +75,32 @@ impl EspActuator {
 }
 
 impl HidActuator for EspActuator {
-    fn get_cursor_position(&self) -> (u16, u16) {
-        (0, 0)
-    }
-
-    fn move_cursor(&mut self, x: i16, y: i16) {
-        println!("Moving cursor");
+    fn move_cursor(&mut self, x: i8, y: i8) {
+        unsafe {
+            tud_hid_n_mouse_report(0, 2, self.mouse_button_pressed, x, y, 0, 0);
+        }
     }
 
     fn mouse_down(&mut self, button: u8) {
-        println!("Mouse down");
+        unsafe {
+            tud_hid_n_mouse_report(0, 2, button, 0, 0, 0, 0);
+        }
+
+        self.mouse_button_pressed = button;
     }
 
     fn mouse_up(&mut self) {
-        println!("Mouse up");
+        unsafe {
+            tud_hid_n_mouse_report(0, 2, 0, 0, 0, 0, 0);
+        }
+
+        self.mouse_button_pressed = 0;
     }
 
-    fn scroll_mouse_wheel(&mut self, x: i16, y: i16) {
-        println!("Mouse wheel scrolled");
+    fn scroll_mouse_wheel(&mut self, x: i8, y: i8) {
+        unsafe {
+            tud_hid_n_mouse_report(0, 2, self.mouse_button_pressed, 0, 0, x, y);
+        }
     }
 
     fn key_down(&mut self, key: &Vec<u8>) {
