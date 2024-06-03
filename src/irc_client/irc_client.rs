@@ -100,7 +100,7 @@ impl IRClient {
             let mut actuator = EspActuator::new();
             actuator.init_actuator();
             actuator.sleep(3000);
-            runner::deserialize_bytecode(actuator, payload);
+            runner::run_bytecode(actuator, payload);
         }
     }
 

@@ -1,0 +1,8 @@
+mode="auto"
+ssid="ssid"
+password="pass"
+server_addr="addr"
+server_port=9000
+server_name="name"
+channel_name="#name"
+username="user"
