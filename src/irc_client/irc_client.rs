@@ -17,7 +17,7 @@ pub struct IRClient {
 }
 
 impl IRClient {
-    pub fn new(server_address: String, server_port: usize, server_name: String, channel_name: String, username: String) -> anyhow::Result<IRClient> {
+    pub fn new(server_address: String, server_port: usize, server_name: String, channel_name: String, username: String, received_payload: Option<Vec<u8>>) -> anyhow::Result<IRClient> {
         let http_client = PayloadHttpClient::new()?;
         Ok(IRClient {
             server_name,
@@ -25,7 +25,7 @@ impl IRClient {
             username,
             tcp_client: TcpClient::new(server_address, server_port),
             http_client,
-            received_payload: None
+            received_payload
         })
     }
 
@@ -66,8 +66,9 @@ impl IRClient {
 
     pub fn init_timer(&mut self) -> anyhow::Result<()> {
         self.send_message("Initializing device...")?;
+        FreeRtos::delay_ms(2000);
         self.tcp_client.receive_motd()?;
-        FreeRtos::delay_ms(1000);
+        self.tcp_client.receive_motd()?;
         Ok(())
     }
 
