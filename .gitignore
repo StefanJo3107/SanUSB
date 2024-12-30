@@ -17,3 +17,5 @@ Cargo.lock
 /.embuild
 /.idea
 /.github
+payload.sanb
+config.toml
