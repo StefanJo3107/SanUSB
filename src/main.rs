@@ -1,5 +1,4 @@
 use sanusb::runner;
-use sanusb::runner::SanMode;
 
 fn main() {
     // It is necessary to call this function once. Otherwise, some patches to the runtime

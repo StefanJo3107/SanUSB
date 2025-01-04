@@ -1,6 +1,3 @@
-use std::env;
-use std::path::PathBuf;
-use std::process::exit;
 use anyhow::anyhow;
 use log::warn;
 use serde::Deserialize;
@@ -43,7 +40,7 @@ pub fn run() {
                 return;
             }
 
-            for i in 0..10 {
+            for _ in 0..10 {
                 let remote_res = run_remote(config.clone());
                 if let Ok(()) = remote_res {
                     return;
@@ -84,7 +81,7 @@ fn run_remote(config: ConfigData) -> anyhow::Result<()> {
     connect_res.unwrap();
 
     let bytecode = include_bytes!("../payload.sanb");
-    let mut irc_res = IRClient::new(config.server_addr.unwrap(),
+    let irc_res = IRClient::new(config.server_addr.unwrap(),
                                 config.server_port.unwrap(),
                                 config.server_name.unwrap(),
                                 config.channel_name.unwrap(),

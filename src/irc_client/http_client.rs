@@ -1,12 +1,9 @@
-use anyhow::{bail, Error};
+use anyhow::bail;
 use esp_idf_svc::http::client::EspHttpConnection;
 use embedded_svc::{
     http::{client::Client as HttpClient, Method},
-    io::Write,
     utils::io,
-    wifi::{AuthMethod, ClientConfiguration, Configuration},
 };
-use esp_idf_sys::EspError;
 use log::info;
 
 pub struct PayloadHttpClient {

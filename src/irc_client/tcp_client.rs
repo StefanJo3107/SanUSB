@@ -1,4 +1,3 @@
-use std::io;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpStream};
 use log::info;
@@ -26,7 +25,7 @@ impl TcpClient {
     }
 
     pub fn send_command(&mut self, command: String) -> anyhow::Result<()> {
-        let mut stream = self.stream.as_mut().expect("TCP stream is not initialized");
+        let stream = self.stream.as_mut().expect("TCP stream is not initialized");
         stream.write_all(command.as_bytes())?;
         info!("Sent command: {}", command);
         Ok(())
@@ -34,7 +33,7 @@ impl TcpClient {
 
     pub fn receive_motd(&mut self) -> anyhow::Result<String> {
         let mut result: [u8;5000] = [0;5000];
-        let mut stream = self.stream.as_mut().expect("TCP stream is not initialized");
+        let stream = self.stream.as_mut().expect("TCP stream is not initialized");
         stream.read(&mut result)?;
         info!("Received response: {}", std::str::from_utf8(&result)?);
         Ok(std::str::from_utf8(&result)?.parse()?)
@@ -42,14 +41,14 @@ impl TcpClient {
 
     pub fn receive_response(&mut self) -> anyhow::Result<String> {
         let mut result: [u8;400] = [0;400];
-        let mut stream = self.stream.as_mut().expect("TCP stream is not initialized");
+        let stream = self.stream.as_mut().expect("TCP stream is not initialized");
         stream.read(&mut result)?;
         info!("Received response: {}", std::str::from_utf8(&result)?);
         Ok(std::str::from_utf8(&result)?.parse()?)
     }
 
     pub fn close_stream(&mut self) -> anyhow::Result<()> {
-        let mut stream = self.stream.as_mut().expect("TCP stream is not initialized");
+        let stream = self.stream.as_ref().expect("TCP stream is not initialized");
         stream.shutdown(Shutdown::Both)?;
         Ok(())
     }

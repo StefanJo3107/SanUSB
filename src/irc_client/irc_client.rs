@@ -1,6 +1,5 @@
-use anyhow::bail;
 use esp_idf_hal::delay::FreeRtos;
-use log::{info, warn};
+use log::warn;
 use san_vm::runner;
 use san_common::hid_actuator::HidActuator;
 use crate::actuator::esp_actuator::EspActuator;
@@ -128,7 +127,7 @@ impl IRClient {
                 comm if comm.contains(":PAYLOAD,") => {
                     let url = response.split(',').last();
                     if let Some(payload_url) = url {
-                        let mut payload_url = payload_url[0..payload_url.find('\r').unwrap()].to_owned();
+                        let payload_url = payload_url[0..payload_url.find('\r').unwrap()].to_owned();
                         self.download_payload(payload_url.as_str())?;
                     } else {
                         self.send_message("URL not provided!")?;
